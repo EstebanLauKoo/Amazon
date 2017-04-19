@@ -39,19 +39,21 @@ var start = function () {
         }
     ])
         .then(function (dataUser) {
-            console.log(dataUser.user)
             if (dataUser.user === 'Customer') {
-                displayAuctions()
+                customerOperation()
             }
             else if (dataUser.user === "Manager") {
-
+                managerOperation()
+            }
+            else if (dataUser.user === "Supervisor") {
+                supervisorOperation()
             }
             else if (dataUser.user === 'Exit') {
                 console.log("See You Later!")
             }
         })
 }
-function displayAuctions() {
+function customerOperation() {
     connection.query("SELECT * FROM products", function (err, results) {
             console.log("These are the available items")
             for (var i = 0; i < results.length; i++) {
@@ -108,6 +110,76 @@ function displayAuctions() {
                 })
     })
 }
+function managerOperation() {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "password",
+            message: "Please input your password"
+        },
+    ])
+        .then(function (authentication) {
+            if (authentication.password === "0000") {
+                console.log("Welcome")
+                inquirer.prompt([
+                    {
+                        type: "list",
+                        name: "function",
+                        message: "What would you like to do",
+                        choices: [
+                            {
+                                name: "View Products for Sale"
+                            },
+                            {
+                                name: "View Low Inventory"
+                            },
+                            {
+                                name: "Add to Inventory"
+                            },
+                            {
+                                name: "Add New Product"
+                            }
+                        ]
+                    }
+                ])
+                    .then(function (answer) {
+                        if (answer.function === "View Products for Sale") {
+                            connection.query("SELECT * FROM products", function (err, results) {
+                                console.log("These are the available items in inventory")
+                                for (var i = 0; i < results.length; i++) {
+                                    console.log("ID: " + results[i].item_id +
+                                        " Name: " + results[i].product_name +
+                                        " Price: " + results[i].price +
+                                        " Quantity: " + results[i].stock_quantity
+                                    )
+                                }
+                        })
+                            setTimeout(managerOperation, 4000)
+                    }
+                        else if (answer.function === "View Low Inventory") {
+                            connection.query("SELECT * FROM products WHERE `stock_quantity` < '5'",
+                                function (err, results) {
+                                console.log("These are the available items in inventory")
+                                for (var i = 0; i < results.length; i++) {
+                                    console.log("ID: " + results[i].item_id +
+                                        " Name: " + results[i].product_name +
+                                        " Price: " + results[i].price +
+                                        " Quantity: " + results[i].stock_quantity
+                                    )
+                                }
+                            })
+                        }
+                        else if (answer.function === "Add to Inventory") {
 
+                        }
+                        else if (answer.function === "Add New Product") {
 
+                        }
+                })
+            }
+            else {
+                console.log("Sorry wrong password")
+            }
+        })
+}
 start()
