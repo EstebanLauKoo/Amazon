@@ -153,13 +153,29 @@ function managerOperation() {
                                         " Quantity: " + results[i].stock_quantity
                                     )
                                 }
-                        })
+                            })
                             setTimeout(managerOperation, 4000)
-                    }
+                        }
                         else if (answer.function === "View Low Inventory") {
                             connection.query("SELECT * FROM products WHERE `stock_quantity` < '5'",
                                 function (err, results) {
-                                console.log("These are the available items in inventory")
+                                    console.log("These are the available items in inventory")
+                                    for (var i = 0; i < results.length; i++) {
+                                        console.log("ID: " + results[i].item_id +
+                                            " Name: " + results[i].product_name +
+                                            " Price: " + results[i].price +
+                                            " Quantity: " + results[i].stock_quantity
+                                        )
+                                    }
+                                })
+                        }
+                        else if (answer.function === "Add to Inventory") {
+                            connection.query("SELECT * FROM products", function (err, results) {
+                                if (err) {
+                                    throw error
+                                }
+                                console.log(results)
+                                console.log("These are the available items")
                                 for (var i = 0; i < results.length; i++) {
                                     console.log("ID: " + results[i].item_id +
                                         " Name: " + results[i].product_name +
@@ -167,15 +183,94 @@ function managerOperation() {
                                         " Quantity: " + results[i].stock_quantity
                                     )
                                 }
+                                inquirer.prompt([
+                                    {
+                                        type: "input",
+                                        name: "choice",
+                                        message: "Which ID would you like to add more inventory off?"
+                                    },
+                                    {
+                                        type: "input",
+                                        name: "quantity",
+                                        message: "How much would you like to add?"
+                                    }
+                                ])
+                                    .then(function (results) {
+                                        connection.query("SELECT * from products WHERE ?", {
+                                            item_id: results.choice
+                                        }, function (err, res) {
+                                            if (err) {
+                                                throw err;
+                                                console.log("There is no such ID")
+                                            }
+                                            console.log(res[0].stock_quantity)
+                                            console.log(results.quantity)
+                                            connection.query("UPDATE products SET ? WHERE ?", [
+                                                    {
+                                                        stock_quantity: res[0].stock_quantity + parseInt(results.quantity)
+                                                    },
+                                                    {
+                                                        item_id: results.choice
+                                                    }
+                                                ],
+                                                function (err, res) {
+                                                    if (err) {
+                                                        throw err
+                                                    }
+                                                    console.log("Quantity has been added")
+                                                    start()
+                                                })
+                                        })
+                                    })
                             })
                         }
-                        else if (answer.function === "Add to Inventory") {
-
-                        }
                         else if (answer.function === "Add New Product") {
-
+                            inquirer.prompt([
+                                {
+                                    type: "input",
+                                    name: "name",
+                                    message: "What is the name of the product?"
+                                },
+                                {
+                                    type: "input",
+                                    name: "department",
+                                    message: "What department would you like it to be in?"
+                                },
+                                {
+                                    type: "input",
+                                    name: "price",
+                                    message: "What price would you like to set it up at?"
+                                },
+                                {
+                                    type: "input",
+                                    name: "quantity",
+                                    message: "What would be your stock quantity?"
+                                }
+                            ])
+                                .then(function (results) {
+                                    connection.query("INSERT INTO products SET ?",[
+                                        {
+                                            product_name: results.name
+                                        },
+                                        {
+                                            department_name: results.department
+                                        },
+                                        {
+                                            price: results.price
+                                        },
+                                        {
+                                            stock_quantity: results.quantity
+                                        }
+                                    ], function (err, data) {
+                                        if (err)
+                                            throw err
+                                        else {
+                                            console.log("item has been added")
+                                        }
+                                    })
+                                })
                         }
-                })
+                    })
             }
             else {
                 console.log("Sorry wrong password")
