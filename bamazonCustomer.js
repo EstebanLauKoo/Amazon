@@ -3,7 +3,7 @@
  */
 var mysql = require('mysql')
 var inquirer = require('inquirer')
-
+var table = require("console.table")
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -105,6 +105,7 @@ function customerOperation() {
                                 }
                                 console.log("Congratulations on your purchase?" + "\nYour total was: $" + total)
                                 totalSales(department)
+                                setTimeout(start)
                                 }
                             )
                         }
@@ -170,6 +171,7 @@ function managerOperation() {
                                         )
                                     }
                                 })
+                                setTimeout(managerOperation, 4000)
                         }
                         else if (answer.function === "Add to Inventory") {
                             connection.query("SELECT * FROM products", function (err, results) {
@@ -225,6 +227,7 @@ function managerOperation() {
                                         })
                                     })
                             })
+                            setTimeout(managerOperation, 4000)
                         }
                         else if (answer.function === "Add New Product") {
                             inquirer.prompt([
@@ -267,6 +270,7 @@ function managerOperation() {
                                 })
                         }
                     })
+                setTimeout(managerOperation, 4000)
             }
             else {
                 console.log("Sorry wrong password")
@@ -283,7 +287,6 @@ function supervisorOperation() {
     ])
         .then(function (results) {
             if (results.password === "0000") {
-                console.log("Welcome")
                 inquirer.prompt([
                     {
                         type: "list",
@@ -300,7 +303,11 @@ function supervisorOperation() {
                     }
                 ]).then(function (results) {
                     if (results.option === "View Product Sales by Department") {
-
+                        connection.query("SELECT * FROM departments", function (err, results) {
+                            console.log(results)
+                            console.table(results)
+                        })
+                        setTimeout(supervisorOperation, 4000)
                     }
                     else if (results.option === "Create New Department") {
                         inquirer.prompt([
@@ -332,6 +339,7 @@ function supervisorOperation() {
                             })
                     }
                 })
+                setTimeout(supervisorOperation, 4000)
             }
             else {
                 console.log("Wrong Password")

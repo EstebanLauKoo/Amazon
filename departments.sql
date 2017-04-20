@@ -10,3 +10,15 @@ CREATE TABLE departments(
   total_sales INT(30) NOT NULL DEFAULT 0,
   PRIMARY KEY (department_id)
 );
+
+INSERT INTO `bamazon`.`departments` (`department_id`, `department_name`, `over_head_costs`, `total_sales`)
+VALUES ('1', 'Electronics', '7000', '0');
+
+INSERT INTO `bamazon`.`departments` (`department_id`, `department_name`, `over_head_costs`, `total_sales`)
+VALUES ('2', 'Clothing', '6000', '0');
+
+INSERT INTO `bamazon`.`departments` (`department_id`, `department_name`, `over_head_costs`, `total_sales`)
+VALUES ('3', 'Produce', '8000', '0');
+
+INSERT INTO `bamazon`.`departments` (`department_id`, `department_name`, `over_head_costs`, `total_sales`)
+VALUES ('4', 'Home', '4000', '0');
