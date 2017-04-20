@@ -9,6 +9,7 @@ CREATE TABLE products(
   department_name VARCHAR(40) NOT NULL,
   price INT(30) NOT NULL,
   stock_quantity INT(30) NOT NULL,
+  product_sales INT(30)
   PRIMARY KEY (item_id)
 );
 -- Inserting Mock Data

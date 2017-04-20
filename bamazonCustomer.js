@@ -250,16 +250,10 @@ function managerOperation() {
                                 .then(function (results) {
                                     connection.query("INSERT INTO products SET ?",[
                                         {
-                                            product_name: results.name
-                                        },
-                                        {
-                                            department_name: results.department
-                                        },
-                                        {
+                                            product_name: results.name,
+                                            stock_quantity: results.quantity,
+                                            department_name: results.department,
                                             price: results.price
-                                        },
-                                        {
-                                            stock_quantity: results.quantity
                                         }
                                     ], function (err, data) {
                                         if (err)
@@ -274,6 +268,38 @@ function managerOperation() {
             }
             else {
                 console.log("Sorry wrong password")
+            }
+        })
+}
+function supervisorOperation() {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "password",
+            message: "Please input your password"
+        }
+    ])
+        .then(function (results) {
+            if (results.password === "0000") {
+                console.log("Welcome")
+                inquirer.prompt([
+                    {
+                        type: "list",
+                        name: "option",
+                        message: "What would you like to do?",
+                        choices:[
+                            {
+                                name: "View Product Sales by Department"
+                            },
+                            {
+                                name: "Create New Department"
+                            }
+                        ]
+                    }
+                ])
+            }
+            else {
+                console.log("Wrong Password")
             }
         })
 }
