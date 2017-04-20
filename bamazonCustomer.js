@@ -88,9 +88,12 @@ function customerOperation() {
                             console.log("There is not enough in stock")
                         }
                         else {
+                            var department = res[0].department_name
+                            console.log(department)
                             connection.query("UPDATE products SET ? WHERE ?", [
                                 {
-                                    stock_quantity: res[0].stock_quantity - results.quantity
+                                    stock_quantity: res[0].stock_quantity - results.quantity,
+                                    product_sales: res[0].product_sales + total
                                 },
                                 {
                                     item_id: results.choice
@@ -100,9 +103,8 @@ function customerOperation() {
                                 if (err) {
                                     throw err
                                 }
-                                    console.log("Congratulations on your purchase!")
-                                    console.log("Your total was: $" + total)
-                                    start()
+                                console.log("Congratulations on your purchase?" + "\nYour total was: $" + total)
+                                totalSales(department)
                                 }
                             )
                         }
@@ -296,11 +298,68 @@ function supervisorOperation() {
                             }
                         ]
                     }
-                ])
+                ]).then(function (results) {
+                    if (results.option === "View Product Sales by Department") {
+
+                    }
+                    else if (results.option === "Create New Department") {
+                        inquirer.prompt([
+                            {
+                                type: "input",
+                                name: "name",
+                                message: "What is the name of the new department?"
+                            },
+                            {
+                                type: "input",
+                                name: "cost",
+                                message: "What is the cost for this new department?"
+                            }
+                        ])
+                            .then(function (results) {
+                                connection.query("INSERT INTO departments SET ?",[
+                                    {
+                                        department_name: results.name,
+                                        over_head_costs: results.cost
+                                    }
+                                ],
+                                    function (err, res) {
+                                        if (err)
+                                            throw err
+                                        console.log("New department has been added")
+                                    }
+
+                                )
+                            })
+                    }
+                })
             }
             else {
                 console.log("Wrong Password")
             }
         })
+}
+function totalSales(department) {
+    var total = 0
+    connection.query("SELECT * from products WHERE ?", {
+        department_name: department
+    }, function (err, res) {
+        if (err)
+            throw err
+        for (var i = 0; i < res.length; i++) {
+            total += res[i].product_sales
+        }
+        connection.query("UPDATE departments SET ? WHERE ?",[
+            {
+                total_sales: total
+            },
+            {
+                department_name: department
+            }
+    ],
+        function (err, res) {
+            if (err)
+                throw err
+        })
+    })
 }
 start()
