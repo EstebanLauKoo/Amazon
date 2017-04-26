@@ -303,11 +303,10 @@ function supervisorOperation() {
                     }
                 ]).then(function (results) {
                     if (results.option === "View Product Sales by Department") {
-                        connection.query("SELECT * FROM departments", function (err, results) {
-                            console.log(results)
-                            console.table(results)
+                        connection.query("SELECT `department_id` as `Department ID`, `department_name` as `Department Name`, `over_head_costs` as `Overhead Costs`, `total_sales` as `Product Sales`, (total_sales - over_head_costs) as `Total Profit` FROM `departments`", function (err, res) {
+                            console.table(res)
+                            setTimeout(supervisorOperation, 4000)
                         })
-                        setTimeout(supervisorOperation, 4000)
                     }
                     else if (results.option === "Create New Department") {
                         inquirer.prompt([
